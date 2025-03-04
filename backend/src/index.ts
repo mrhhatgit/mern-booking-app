@@ -38,23 +38,13 @@ app.use(cors({
 }));
 
 // Serve frontend (React/Vue/Next.js build)
-const frontendPath = path.join(__dirname, "../../frontend/dist");
-app.use(express.static(frontendPath));
-
-app.get("/", (req: Request, res: Response) => {
-    res.send("Server is running...");
-});
-
-app.get("*", (req: Request, res: Response) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-});
+app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
 // Start server
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(8000, () => {
+    console.log("Server is running on localhost:8000");
 });
