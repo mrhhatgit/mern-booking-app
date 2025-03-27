@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { v2 as cloudinary } from 'cloudinary';
 import hotelRoutes from "./routes/hotels";
+import bookingRoutes from './routes/my-bookings';
 
 // Load environment variables
 dotenv.config();
@@ -55,6 +56,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/my-hotels', myHotelRoutes);
 app.use('/api/hotels', hotelRoutes);
+app.use('/api/my-bookings', bookingRoutes)
 
 // Catch-all route for serving the frontend
 app.get('*', (req: Request, res: Response) => {
