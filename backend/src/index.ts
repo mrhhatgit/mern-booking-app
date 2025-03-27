@@ -1,22 +1,24 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import userRoutes from './routes/users';
 import authRoutes from './routes/auth';
-import cookieParser from "cookie-parser";
-import path from 'path';
-import { v2 as cloudinary} from 'cloudinary'
 import myHotelRoutes from './routes/my-hotels';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import hotelRoutes from "./routes/hotels";
 
+// Load environment variables
+dotenv.config();
+
+// Configure Cloudinary
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-// Load environment variables
-dotenv.config();
 
 // Check if MongoDB connection string exists
 const mongoUri = process.env.MONGODB_CONNECTION_STRING;
@@ -28,9 +30,9 @@ if (!mongoUri) {
 // Connect to MongoDB Atlas
 mongoose.set('strictQuery', false);
 mongoose.connect(mongoUri)
-    .then(() => console.log("Connected to MongoDB Atlas"))
+    .then(() => console.log("✅ Connected to MongoDB Atlas"))
     .catch((err) => {
-        console.error("Failed to connect to MongoDB Atlas", err);
+        console.error("❌ Failed to connect to MongoDB Atlas:", err);
         process.exit(1);
     });
 
@@ -46,14 +48,21 @@ app.use(cors({
 }));
 
 // Serve frontend (React/Vue/Next.js build)
-app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/my-hotels", myHotelRoutes) 
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/my-hotels', myHotelRoutes);
+app.use('/api/hotels', hotelRoutes);
 
-// Start server
-app.listen(8000, () => {
-    console.log("Server is running on localhost:8000");
+// Catch-all route for serving the frontend
+app.get('*', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+});
+
+// Start the server
+const PORT = 8000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
